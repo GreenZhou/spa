@@ -1,0 +1,60 @@
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;    
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin-bottom: 10px;
+}
+
+ol, ul, dl {
+    /* 该属性用于声明列表标志相对于列表项内容的位置。
+         外部 (outside) 标志会放在离列表项边框边界一定距离处，不过这距离在 CSS 中未定义。
+         内部 (inside) 标志处理为好像它们是插入在列表项内容最前面的行内元素一样 */
+    list-style-position: inside;
+}
+
+body {
+    font: 13px 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
+    color: #444;
+    backround-color: #888;
+}
+
+a {
+    text-decoration: none;
+}
+a:link, a:visited {
+    color: inherit;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+#spa {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    bottom: 8px;
+    right: 8px;
+
+    min-height: 500px;
+    min-width: 500px;
+    overflow: hidden;
+
+    border-radius: 0 8px 0 8px;/* 左上、右上、右下、左下 */
+    background-color: #fff;
+}
+
+.spa-x-select {
+
+}
+
+.spa-x-clearfloat {
+    height: 0 !important;
+    float: none !important;
+    visibility: hidden !important;
+    clear: both !important;
+}
