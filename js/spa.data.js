@@ -1,0 +1,3 @@
+spa.data = (function() {
+    return {};
+}());

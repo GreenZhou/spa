@@ -20,15 +20,17 @@ ol, ul, dl {
 body {
     font: 13px 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
     color: #444;
-    backround-color: #888;
+    background-color: #888;
 }
 
 a {
     text-decoration: none;
 }
+
 a:link, a:visited {
     color: inherit;
 }
+
 a:hover {
     text-decoration: underline;
 }
