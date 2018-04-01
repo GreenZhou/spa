@@ -1,4 +1,7 @@
+
+
 spa.shell = (function() {
+    'use strict';
     var configMap = {
         anchor_schema_map: {
             chat: {
@@ -10,9 +13,11 @@ spa.shell = (function() {
         resize_interval: 200,
         main_html: ''
             + '<div class="spa-shell-head">'
-            +   '<div class="spa-shell-head-logo"></div>'
-            +    '<div class="spa-shell-head-acct"></div>'
-            +   '<div class="spa-shell-head-search"></div>'
+            +   '<div class="spa-shell-head-logo">' 
+            +       '<h1>SPA</h1>'
+            +       '<p>javascript end to end</p>'
+            +   '</div>'
+            +   '<div class="spa-shell-head-acct"></div>'
             + '</div>'
             + '<div class="spa-shell-main">'
             +   '<div class="spa-shell-main-nav"></div>'
@@ -32,12 +37,14 @@ spa.shell = (function() {
     jqueryMap = {},
 
     // jqueryMap能大大减少jQuery对文档的遍历，从而提高性能
-    setJqueryMap, copyAnchorMap, changeAnchorPart, setChatAnchor, onHashChange, initModule;
+    setJqueryMap, copyAnchorMap, changeAnchorPart, setChatAnchor, onHashChange, onResize, onTapAcct, onLogin, onLogout, initModule;
 
     setJqueryMap = function() {
         var $container = stateMap.$container;
         jqueryMap = {
             $container: $container,
+            $acct: $container.find('.spa-shell-head-acct'),
+            $nav: $container.find('.spa-shell-main-nav'),
             $chat: $container.find('.spa-shell-chat')
         };
     };
@@ -101,7 +108,7 @@ spa.shell = (function() {
 
         spa.chat.handleResize();
 
-        resize_status = setTimeout(function() {    
+        configMap.resize_status = setTimeout(function() {    
             configMap.resize_status = false;
         }, configMap.resize_interval);
         
@@ -115,7 +122,7 @@ spa.shell = (function() {
             _s_chat_previous, _s_chat_proposed,
             is_ok = true,
             s_chat_proposed;
-
+        
         try {
             anchor_map_proposed = $.uriAnchor.makeAnchorMap();
         } catch(error) {
@@ -157,6 +164,32 @@ spa.shell = (function() {
         return false;
     };
 
+    onTapAcct = function(event) {
+        var acct_text, user_name, user = spa.model.people.get_user();
+        if(user.get_is_anon()) {
+            user_name = prompt('Please sign-in');
+            // 特别处理用户名不输入的情况
+            if(!user_name) {
+                return false;
+            }
+            spa.model.people.login(user_name);
+            jqueryMap.$acct.text('... processing ...');
+        } else {
+            spa.model.people.logout();
+        }
+
+        return false;
+
+    };
+
+    onLogin = function(event, login_user) {
+        jqueryMap.$acct.text(login_user.name);
+    };
+
+    onLogout = function(event, logout_user) {
+        jqueryMap.$acct.text('Please sign-in');
+    };
+
     // 公共方法
     initModule = function($container) {
         stateMap.$container = $container;
@@ -168,15 +201,26 @@ spa.shell = (function() {
         });
 
         spa.chat.configModule({
-            set_chat_anchor: setChatAnchor
-            // 暂时禁用，否则会抛异常
-            // chat_modal: spa.model.chat,
-            // people_modal: spa.model.people
+            set_chat_anchor: setChatAnchor,
+            chat_model: spa.model.chat,
+            people_model: spa.model.people
         });
         spa.chat.initModule(jqueryMap.$container);
 
+        spa.avtr.configModule({
+            chat_model: spa.model.chat,
+            people_model: spa.model.people
+        });
+        spa.avtr.initModule(jqueryMap.$nav);
+
         // 监听URI变化并立即触发
         $(window).bind("resize", onResize).bind("hashchange", onHashChange).trigger('hashchange');
+
+        // 订阅spa-login和spa-logout事件
+        $.gevent.subscribe($container, 'spa-login', onLogin);
+        $.gevent.subscribe($container, 'spa-logout', onLogout);
+    
+        jqueryMap.$acct.text('Please sign-in').bind('utap', onTapAcct);
     };
 
     return {
